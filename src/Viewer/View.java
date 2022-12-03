@@ -64,7 +64,6 @@ public class View {
                 startButton.setText("Start");
             }
         });
-
         pane.getChildren().add(startButton);
         buttons.add(startButton);
     }

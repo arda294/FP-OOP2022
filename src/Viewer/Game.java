@@ -37,13 +37,20 @@ public class Game {
         return stage;
     }
 
+    public Scene getScene() {
+        return scene;
+    }
+
     private void createNewGame() {
         ball = new Ball();
         pane.getChildren().add(ball);
-        walls.add(new Wall(100,100));
-        walls.add(new Wall(300,100));
-        pane.getChildren().add(walls.get(0));
-        pane.getChildren().add(walls.get(1));
+        walls.add(new Wall(20, 120,100,100));
+        walls.add(new Wall(10, 40,300,100));
+        walls.add(new Wall(80, 90,500,100));
+        walls.add(new Wall(50, 10,200,300));
+        for(Wall wall : walls) {
+            pane.getChildren().add(wall);
+        }
 
         createGameLoop();
     }
