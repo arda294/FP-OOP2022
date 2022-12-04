@@ -8,12 +8,12 @@ public class Wall extends Rectangle {
 
     public Wall() {
         super(WIDTH, HEIGHT);
-        setRotate(45);
+        setRotate(30);
     }
 
     public Wall(double sizex, double sizey) {
         super(sizex, sizey);
-        setRotate(45);
+        setRotate(30);
     }
 
     public Wall(double sizex, double sizey, double posx, double posy) {

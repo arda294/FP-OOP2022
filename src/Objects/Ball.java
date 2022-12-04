@@ -3,9 +3,14 @@ package Objects;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 import java.util.ArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 
 public class Ball extends Circle {
-    private static final int RADIUS = 20;
+    private static final int RADIUS = 10;
+    private double posX;
+    private double posY;
     public double dx = 0;
     public double dy = 0;
 
@@ -15,8 +20,12 @@ public class Ball extends Circle {
     public boolean isMoving = false;
 
 
-    public Ball() {
+    public Ball(double refreshRate, double physicsFPS) {
         super(RADIUS);
+        posX = 300;
+        posY = 400;
+        speedLimit *= refreshRate/physicsFPS;
+        drag *= refreshRate/(physicsFPS*5);
         setLayoutX(300);
         setLayoutY(400);
 
@@ -31,6 +40,8 @@ public class Ball extends Circle {
             }
         });
     }
+
+
 
     private void limitSpeed() {
         double speed = Math.sqrt(dx*dx + dy*dy);
@@ -59,15 +70,16 @@ public class Ball extends Circle {
             }
         }
 
-        if(getLayoutX()+RADIUS >= getScene().getWidth() || getLayoutX()-RADIUS <= 0) dx *= -1;
-        if(getLayoutY()+RADIUS >= getScene().getHeight() || getLayoutY()-RADIUS <= 0)  dy *= -1;
+        if(posX+RADIUS >= getScene().getWidth() || posX-RADIUS <= 0) dx *= -1;
+        if(posY+RADIUS >= getScene().getHeight() || posY-RADIUS <= 0)  dy *= -1;
 
 //        System.out.println(ball.getLayoutY())
         checkCollision(walls);
-        setLayoutX(getLayoutX() + dx);
-        setLayoutY(getLayoutY() + dy);
+//        setLayoutX(getLayoutX() + dx);
+//        setLayoutY(getLayoutY() + dy);
+        posX += dx;
+        posY += dy;
 //        System.out.println(getLayoutX() + " " + getLayoutY());
-
     }
 
     private static double rotateX(double x, double y, double angle) {
@@ -84,9 +96,11 @@ public class Ball extends Circle {
                 x1 = rotateX(x1-wall.getCenterX(), y1-wall.getCenterY(), wall.getRotate()) + wall.getCenterX();
                 y1 = rotateY(tempX-wall.getCenterX(), y1-wall.getCenterY(), wall.getRotate()) + wall.getCenterY();
             }
-            setLayoutX(x1 + (ni*(RADIUS-distance)));
-            setLayoutY(y1 + (nj*(RADIUS-distance)));
-            System.out.println(distance + " abnormal collision");
+//            setLayoutX(x1 + (ni*(RADIUS-distance)));
+//            setLayoutY(y1 + (nj*(RADIUS-distance)));
+            posX = x1 + (ni*(RADIUS-distance));
+            posY = y1 + (nj*(RADIUS-distance));
+            System.out.println((distance - RADIUS) + " abnormal collision");
         }
     }
 
@@ -96,8 +110,8 @@ public class Ball extends Circle {
         double i, j;
 
         for(Wall wall : walls) {
-            x1 = getLayoutX();
-            y1 = getLayoutY();
+            x1 = posX;
+            y1 = posY;
             if (wall.getRotate() != 0) {
                 double tempX = x1;
                 x1 = rotateX(x1-wall.getCenterX(), y1-wall.getCenterY(), -wall.getRotate()) + wall.getCenterX();
@@ -151,9 +165,13 @@ public class Ball extends Circle {
                     dx = rotateX(dx, dy, wall.getRotate());
                     dy = rotateY(tempX, dy, wall.getRotate());
                 }
-                System.out.println("Collision");
                 break;
             }
         }
+    }
+
+    public void update() {
+        setLayoutX(posX);
+        setLayoutY(posY);
     }
 }
