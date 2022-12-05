@@ -1,6 +1,8 @@
 package Viewer;
 
+import Menu.LevelLoader;
 import Objects.Ball;
+import Objects.Goal;
 import Objects.Wall;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Scene;
@@ -25,12 +27,14 @@ public class Game {
     private static final int refreshRate = gs[0].getDisplayMode().getRefreshRate();
     private static final ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
 
+    private boolean isLevelLoaded = false;
     private AnimationTimer gameTimer;
     private Stage stage;
     private Scene scene;
     private AnchorPane pane;
     private Ball ball;
-    private ArrayList<Wall> walls = new ArrayList<>();
+    private ArrayList<Wall> walls;
+    private Goal goal;
 
     public Game() {
         initializeGame();
@@ -47,7 +51,7 @@ public class Game {
     private void initializeGame() {
         stage = new Stage();
         pane = new AnchorPane();
-        scene = new Scene(pane, 800, 600);
+        scene = new Scene(pane, WIDTH, HEIGHT);
         stage.setScene(scene);
         stage.setResizable(false);
     }
@@ -61,16 +65,16 @@ public class Game {
     }
 
     private void createNewGame() {
-        ball = new Ball(refreshRate, physicsFPS);
+        LevelLoader ld = new LevelLoader();
+        walls = ld.loadLevel("1.txt");
+        goal = new Goal(ld.endX(), ld.endY());
+        pane.getChildren().add(goal);
+        ball = new Ball(refreshRate, physicsFPS, ld.startX(), ld.startY());
         pane.getChildren().add(ball);
-        walls.add(new Wall(20, 120,100,100));
-        walls.add(new Wall(10, 40,300,100));
-        walls.add(new Wall(80, 90,500,100));
-        walls.add(new Wall(50, 10,200,300));
+
         for(Wall wall : walls) {
             pane.getChildren().add(wall);
         }
-
         createGameLoop();
     }
     private void createGameLoop() {
@@ -78,12 +82,16 @@ public class Game {
         Updater updater = new Updater();
         service.scheduleAtFixedRate(updater, 0, 1000000/physicsFPS, TimeUnit.MICROSECONDS);
 
-        // Animation updater at refresh rate (144 hz)
+        // Animation updater at refresh rate
         gameTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
                 ball.moveBall(walls); // Syncs updater thread with viewer pos update
                 ball.update();
+                if(ball.isInGoal(goal)) {
+                    Game.this.stop();
+                    stop();
+                }
             }
         };
         gameTimer.start();

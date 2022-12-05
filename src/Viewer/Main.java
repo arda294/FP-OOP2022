@@ -12,10 +12,10 @@ public class Main extends Application {
         gameview = new Game();
         Stage stage2;
         primaryStage = viewer.getStage();
-//        stage2 = viewer.getStage();
+        stage2 = viewer.getStage();
         primaryStage = gameview.getStage();
         primaryStage.show();
-//        stage2.show();
+        stage2.show();
     }
     @Override
     public void stop() throws Exception {

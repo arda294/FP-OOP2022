@@ -22,6 +22,13 @@ public class Wall extends Rectangle {
         setLayoutY(posy);
     }
 
+    public Wall(double sizex, double sizey, double posx, double posy, double angle) {
+        this(sizex, sizey);
+        setLayoutX(posx);
+        setLayoutY(posy);
+        setRotate(angle);
+    }
+
     public static int getHEIGHT() {
         return HEIGHT;
     }
