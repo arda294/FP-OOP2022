@@ -1,6 +1,7 @@
 package Viewer;
 
 import Menu.LevelLoader;
+import Menu.PowerMeter;
 import Objects.Ball;
 import Objects.Goal;
 import Objects.Wall;
@@ -35,10 +36,13 @@ public class Game {
     private Ball ball;
     private ArrayList<Wall> walls;
     private Goal goal;
+    private PowerMeter powerMeter;
+    private View viewer;
 
-    public Game() {
+    public Game(View viewer) {
+        this.viewer = viewer;
         initializeGame();
-        createNewGame();
+//        createNewGame("1.lvl");
     }
 
     private class Updater implements Runnable {
@@ -64,21 +68,24 @@ public class Game {
         return scene;
     }
 
-    private void createNewGame() {
+    public void createNewGame(String lvl) {
         LevelLoader ld = new LevelLoader();
-        walls = ld.loadLevel("1.txt");
+        walls = ld.loadLevel(lvl);
+        for(Wall wall : walls) {
+            pane.getChildren().add(wall);
+        }
         goal = new Goal(ld.endX(), ld.endY());
         pane.getChildren().add(goal);
         ball = new Ball(refreshRate, physicsFPS, ld.startX(), ld.startY());
         pane.getChildren().add(ball);
-
-        for(Wall wall : walls) {
-            pane.getChildren().add(wall);
-        }
+        powerMeter = new PowerMeter();
+        pane.getChildren().add(powerMeter);
+        System.out.println("Game started");
+        viewer.getStage().setScene(this.scene);
         createGameLoop();
     }
     private void createGameLoop() {
-        // Ball mover and collision detection updater at 288 fps
+        // Ball mover and collision detection updater
         Updater updater = new Updater();
         service.scheduleAtFixedRate(updater, 0, 1000000/physicsFPS, TimeUnit.MICROSECONDS);
 
@@ -88,6 +95,7 @@ public class Game {
             public void handle(long now) {
                 ball.moveBall(walls); // Syncs updater thread with viewer pos update
                 ball.update();
+                powerMeter.setLength(ball.getPower());
                 if(ball.isInGoal(goal)) {
                     Game.this.stop();
                     stop();

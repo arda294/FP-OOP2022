@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+
 public class LevelLoader {
     private File levelTxt;
     private Scanner sc;
@@ -15,7 +16,7 @@ public class LevelLoader {
 
     public ArrayList<Wall> loadLevel(String filePath) {
         try {
-            filePath = System.getProperty("user.dir") + "/src/levels/" + filePath;
+            filePath = System.getProperty("user.dir") + "/levels/" + filePath;
             levelTxt = new File(filePath);
             sc = new Scanner(levelTxt);
         } catch (FileNotFoundException e) {

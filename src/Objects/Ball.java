@@ -14,6 +14,10 @@ public class Ball extends Circle {
     public double drag = 0.035;
     private double speedLimit = 20;
     private double multiplier = 0.01;
+    private double power = 0;
+    private double pullDistance = 100;
+    private double px;
+    private double py;
     public boolean isMoving = false;
 
 
@@ -24,13 +28,23 @@ public class Ball extends Circle {
         speedLimit *= refreshRate/physicsFPS;
         drag *= refreshRate/(physicsFPS*5);
 
+        setOnMouseDragged((MouseEvent event) -> {
+            if(!isMoving) {
+                px = -event.getX();
+                py = -event.getY();
+                limitPull();
+            }
+        });
+
         setOnMouseReleased((MouseEvent event) -> {
             if(!isMoving) {
-                dx = -event.getX() * multiplier;
-                dy = -event.getY() * multiplier;
-                limitSpeed();
+                dx = px*speedLimit;
+                dy = py*speedLimit;
                 System.out.println(dx + " " +dy);
-                System.out.println("Shot with power : " + Math.sqrt(dx*dx + dy*dy)/speedLimit);
+                System.out.println("Shot with power : " + power);
+                px = 0;
+                py = 0;
+                power = 0;
                 isMoving = true;
             }
         });
@@ -44,12 +58,18 @@ public class Ball extends Circle {
 
 
 
-    private void limitSpeed() {
-        double speed = Math.sqrt(dx*dx + dy*dy);
-        if(speed > speedLimit) {
-            dx = (dx/speed)*speedLimit;
-            dy = (dy/speed)*speedLimit;
+    private void limitPull() {
+        double pull = Math.sqrt(px*px + py*py);
+        if(pull > pullDistance) {
+            power = 1;
+            px = (px/pull);
+            py = (py/pull);
+            return;
         }
+        power = pull/pullDistance;
+        px = (px/pull)*(power);
+        py = (py/pull)*(power);
+
     }
 
     private double clamp(double value, double ll, double ul) {
@@ -60,7 +80,6 @@ public class Ball extends Circle {
 
     public void moveBall(ArrayList<Wall> walls) {
         double speed = Math.sqrt(dx*dx + dy*dy);
-//        System.out.println(speed);
         if(speed > 0) {
             dx -= (dx/speed) * drag;
             dy -= (dy/speed) * drag;
@@ -70,17 +89,11 @@ public class Ball extends Circle {
                 isMoving = false;
             }
         }
-
         if(posX+RADIUS >= getScene().getWidth() || posX-RADIUS <= 0) dx *= -1;
         if(posY+RADIUS >= getScene().getHeight() || posY-RADIUS <= 0)  dy *= -1;
-
-//        System.out.println(ball.getLayoutY())
         checkCollision(walls);
-//        setLayoutX(getLayoutX() + dx);
-//        setLayoutY(getLayoutY() + dy);
         posX += dx;
         posY += dy;
-//        System.out.println(getLayoutX() + " " + getLayoutY());
     }
 
     private static double rotateX(double x, double y, double angle) {
@@ -182,5 +195,9 @@ public class Ball extends Circle {
             return true;
         }
         return false;
+    }
+
+    public double getPower() {
+        return power;
     }
 }

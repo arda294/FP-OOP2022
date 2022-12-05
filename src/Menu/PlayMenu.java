@@ -1,5 +1,6 @@
 package Menu;
 
+import Viewer.View;
 import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.scene.SubScene;
@@ -8,13 +9,24 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
+import java.util.ArrayList;
+
 public class PlayMenu extends SubScene {
     public boolean isHidden = true;
     private AnchorPane pane2;
-    public PlayMenu() {
+    private LevelGetter lvlselect = new LevelGetter();
+    private ArrayList<Button> buttons = new ArrayList<>();
+    private LevelList levelList;
+    private String selectedLvl;
+    private View viewer;
+    public PlayMenu(View viewer) {
         super(new AnchorPane(), 500,400);
-        pane2 = (AnchorPane)this.getRoot();
+        this.viewer = viewer;
+        pane2 = (AnchorPane) this.getRoot();
         pane2.setStyle("-fx-background-color: transparent ;");
+        levelList = new LevelList(lvlselect.getLevels());
+        pane2.getChildren().add(levelList);
+        createStartButton();
         setFill(Color.web("#ffff99"));
         setLayoutX(150);
         setLayoutY(850);
@@ -48,5 +60,13 @@ public class PlayMenu extends SubScene {
         transition.setNode(this);
         transition.setToY(0);
         transition.play();
+    }
+
+    private void createStartButton() {
+        Button start = new Button("Start");
+        start.setOnAction((ActionEvent event) -> {
+            viewer.getGame().createNewGame(levelList.getLevel());
+        });
+        pane2.getChildren().add(start);
     }
 }

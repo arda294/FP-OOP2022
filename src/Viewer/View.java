@@ -2,7 +2,6 @@ package Viewer;
 
 import Menu.PlayMenu;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
@@ -21,13 +20,10 @@ public class View {
     private AnchorPane pane;
     private ArrayList<Button> buttons = new ArrayList<>();
     private PlayMenu playMenu;
+    private Game game;
     public View() {
         initializeView();
-        playMenu = new PlayMenu();
-        pane.getChildren().add(playMenu);
-
         createButtons();
-
         System.out.println("Viewer created");
     }
 
@@ -41,6 +37,9 @@ public class View {
         stage.setScene(scene);
         stage.setTitle("Mini Golf");
         stage.getIcons().add(new Image("resources/ball.png"));
+        playMenu = new PlayMenu(this);
+        pane.getChildren().add(playMenu);
+        game = new Game(this);
         createBanner();
     }
     public Stage getStage() {
@@ -48,10 +47,10 @@ public class View {
     }
 
     private void createButtons() {
-        createStartButton();
+        createPlayButton();
     }
-    private void createStartButton() {
-        Button startButton = new Button("Start");
+    private void createPlayButton() {
+        Button startButton = new Button("Play");
         startButton.setLayoutX(400);
         startButton.setLayoutY(150);
 
@@ -61,7 +60,7 @@ public class View {
                 startButton.setText("Back");
             } else {
                 playMenu.toggleMenu();
-                startButton.setText("Start");
+                startButton.setText("Play");
             }
         });
         pane.getChildren().add(startButton);
@@ -75,5 +74,9 @@ public class View {
         banner.setLayoutX(150);
         banner.setLayoutY(50);
         pane.getChildren().add(banner);
+    }
+
+    public Game getGame() {
+        return game;
     }
 }
