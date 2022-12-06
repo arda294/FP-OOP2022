@@ -28,6 +28,7 @@ public class PlayMenu extends SubScene {
         pane2.getChildren().add(levelList);
         createStartButton();
         setFill(Color.web("#ffff99"));
+        getStyleClass().add("file:/"+System.getProperty("user.dir").replace("\\", "/")+"/styles/buttons.css");
         setLayoutX(150);
         setLayoutY(850);
     }
@@ -64,9 +65,12 @@ public class PlayMenu extends SubScene {
 
     private void createStartButton() {
         Button start = new Button("Start");
+        start.setId("menu-button");
         start.setOnAction((ActionEvent event) -> {
             viewer.getGame().createNewGame(levelList.getLevel());
         });
+        start.setLayoutX(250-40);
+        start.setLayoutY(400-45);
         pane2.getChildren().add(start);
     }
 }

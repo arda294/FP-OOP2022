@@ -17,7 +17,7 @@ public class LevelList extends SubScene {
     private static final double padding = 50;
     private int selectedIdx = 0;
 
-    public LevelList(HashSet<String> levels) {
+    public LevelList(ArrayList<String> levels) {
         super(new ScrollPane(), 500-padding, 400-padding);
         pane = (ScrollPane)this.getRoot();
         pane.setContent(tilepane);

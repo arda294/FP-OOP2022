@@ -40,6 +40,7 @@ public class View {
         playMenu = new PlayMenu(this);
         pane.getChildren().add(playMenu);
         game = new Game(this);
+        scene.getStylesheets().add("file:/"+System.getProperty("user.dir").replace("\\", "/")+"/styles/buttons.css");
         createBanner();
     }
     public Stage getStage() {
@@ -51,8 +52,9 @@ public class View {
     }
     private void createPlayButton() {
         Button startButton = new Button("Play");
-        startButton.setLayoutX(400);
-        startButton.setLayoutY(150);
+        startButton.setId("menu-button");
+        startButton.setLayoutX(400-40);
+        startButton.setLayoutY(150+5);
 
         startButton.setOnAction((ActionEvent event) -> {
             if(playMenu.isHidden) {

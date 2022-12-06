@@ -11,9 +11,8 @@ public class Ball extends Circle {
     public double dx = 0;
     public double dy = 0;
 
-    public double drag = 0.035;
-    private double speedLimit = 20;
-    private double multiplier = 0.01;
+    public double drag = 0.001;
+    private double speedLimit = 2;
     private double power = 0;
     private double pullDistance = 100;
     private double px;
@@ -25,8 +24,9 @@ public class Ball extends Circle {
         super(RADIUS);
         posX = 400;
         posY = 300;
-        speedLimit *= refreshRate/physicsFPS;
-        drag *= refreshRate/(physicsFPS*5);
+        speedLimit *= (1000/physicsFPS);
+        drag *= (1000/physicsFPS);
+        System.out.println(speedLimit);
 
         setOnMouseDragged((MouseEvent event) -> {
             if(!isMoving) {
