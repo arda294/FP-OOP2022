@@ -5,7 +5,7 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
     View viewer;
-    Game gameview;
+//    Game gameview;
     @Override
     public void start(Stage primaryStage) {
         viewer = new View();
@@ -26,4 +26,15 @@ public class Main extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
+//    Casting
+//    Overloading
+//    Overriding
+//    Inheritance
+//    Encapsulation
+//    Constructor
+//    Collection
+//    Exception Handling
+//    Input Output
+
 }

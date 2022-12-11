@@ -1,6 +1,9 @@
 package Objects;
 
+import javafx.scene.Scene;
+import javafx.scene.SubScene;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import java.util.ArrayList;
 
@@ -18,10 +21,14 @@ public class Ball extends Circle {
     private double px;
     private double py;
     public boolean isMoving = false;
+    private int puts = 0;
 
 
-    public Ball(double refreshRate, double physicsFPS) {
+    public Ball(double physicsFPS) {
         super(RADIUS);
+        setFill(Color.WHITE);
+        setStroke(Color.BLACK);
+        setStrokeWidth(4);
         posX = 400;
         posY = 300;
         speedLimit *= (1000/physicsFPS);
@@ -46,12 +53,13 @@ public class Ball extends Circle {
                 py = 0;
                 power = 0;
                 isMoving = true;
+                puts++;
             }
         });
     }
 
-    public Ball(double refreshRate, double physicsFPS, double startX, double startY) {
-        this(refreshRate, physicsFPS);
+    public Ball(double physicsFPS, double startX, double startY) {
+        this(physicsFPS);
         this.posX = startX;
         this.posY = startY;
     }
@@ -199,5 +207,9 @@ public class Ball extends Circle {
 
     public double getPower() {
         return power;
+    }
+
+    public int getPuts() {
+        return puts;
     }
 }

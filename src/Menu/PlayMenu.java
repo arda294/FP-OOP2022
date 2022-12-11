@@ -1,5 +1,6 @@
 package Menu;
 
+import Util.LevelGetter;
 import Viewer.View;
 import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;

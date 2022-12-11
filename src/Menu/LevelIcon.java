@@ -9,6 +9,7 @@ public class LevelIcon extends Button {
         super(levelpath.substring(0,levelpath.lastIndexOf(".")));
         this.level = levelpath;
         this.levelName = levelpath.substring(0,levelpath.lastIndexOf("."));
+        setId("lvl-button");
     }
 
     public String getLevelName() {

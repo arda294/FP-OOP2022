@@ -36,15 +36,14 @@ public class View {
         scene.setFill(Color.web("#81c483"));
         stage.setScene(scene);
         stage.setTitle("Mini Golf");
+        // referensi gambar : https://www.freeiconspng.com/thumbs/golf-ball-png/golf-ball-png-big-image-png--1.png
         stage.getIcons().add(new Image("resources/ball.png"));
         playMenu = new PlayMenu(this);
         pane.getChildren().add(playMenu);
         game = new Game(this);
+        // referensi : http://fxexperience.com/2011/12/styling-fx-buttons-with-css/
         scene.getStylesheets().add("file:/"+System.getProperty("user.dir").replace("\\", "/")+"/styles/buttons.css");
         createBanner();
-    }
-    public Stage getStage() {
-        return stage;
     }
 
     private void createButtons() {
@@ -70,6 +69,7 @@ public class View {
     }
 
     private void createBanner() {
+        // referensi gambar : https://images.squarespace-cdn.com/content/v1/5abab1083917ee2d0111701a/78ee2e94-cf36-4b4b-aa8b-cc549a98b561/Tan+Text+Mini+Golf+Logo.png
         ImageView banner = new ImageView("resources/banner.png");
         banner.setFitWidth(500);
         banner.setPreserveRatio(true);
@@ -78,7 +78,23 @@ public class View {
         pane.getChildren().add(banner);
     }
 
+    public void viewGame() {
+        stage.setScene(game.getScene());
+    }
+
+    public void viewMainMenu() {
+        stage.setScene(scene);
+    }
+
     public Game getGame() {
         return game;
+    }
+
+    public Stage getStage() {
+        return stage;
+    }
+
+    public Scene getScene() {
+        return scene;
     }
 }

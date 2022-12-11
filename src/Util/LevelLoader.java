@@ -1,4 +1,4 @@
-package Menu;
+package Util;
 
 import Objects.Wall;
 

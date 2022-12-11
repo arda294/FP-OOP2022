@@ -1,6 +1,7 @@
 package Menu;
 
 import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
 import javafx.scene.SubScene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -23,6 +24,10 @@ public class LevelList extends SubScene {
         pane.setContent(tilepane);
         pane.setLayoutX(padding);
         pane.setLayoutY(padding);
+        tilepane.setPadding(new Insets(10,10,10,10));
+        tilepane.setPrefColumns(4);
+        tilepane.setHgap(20);
+        tilepane.setVgap(20);
         for(String lvl : levels) {
             buttons.add(new LevelIcon(lvl));
         }
