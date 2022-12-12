@@ -29,7 +29,7 @@ public class PlayMenu extends SubScene {
         pane2.getChildren().add(levelList);
         createStartButton();
         setFill(Color.web("#ffff99"));
-        getStyleClass().add("file:/"+System.getProperty("user.dir").replace("\\", "/")+"/styles/buttons.css");
+        getStyleClass().add("file:/"+System.getProperty("user.dir").replace("\\", "/")+"/src/styles/buttons.css");
         setLayoutX(150);
         setLayoutY(850);
     }

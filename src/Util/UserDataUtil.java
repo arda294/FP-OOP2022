@@ -10,7 +10,7 @@ public class UserDataUtil {
     private int bestTime;
     private int bestPuts;
     public UserDataUtil(String level) {
-        data = new File(System.getProperty("user.dir") + "/levels/userdata/" + level + ".dat");
+        data = new File("levels/userdata/"+level+".dat");
         try {
             if(data.createNewFile()) saveNew();
             else getData(data);

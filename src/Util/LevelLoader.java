@@ -14,10 +14,9 @@ public class LevelLoader {
     private double[] start = {0,0};
     private double[] end = {0,0};
 
-    public ArrayList<Wall> loadLevel(String filePath) {
+    public ArrayList<Wall> loadLevel(String fileName) {
         try {
-            filePath = System.getProperty("user.dir") + "/levels/" + filePath;
-            levelTxt = new File(filePath);
+            levelTxt = new File("levels/"+fileName);
             sc = new Scanner(levelTxt);
         } catch (FileNotFoundException e) {
             System.out.println("Error in loading level");

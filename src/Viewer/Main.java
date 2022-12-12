@@ -3,11 +3,15 @@ package Viewer;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+import java.net.URLClassLoader;
+
 public class Main extends Application {
     View viewer;
 //    Game gameview;
     @Override
     public void start(Stage primaryStage) {
+//        System.out.println(getClass().getResource("/Resources/ball.png"));
         viewer = new View();
 //        gameview = new Game();
 //        Stage stage2;

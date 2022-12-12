@@ -72,7 +72,7 @@ public class Game {
         scene.setOnMouseClicked((MouseEvent e) -> {
             if(!isPlaying) viewer.viewMainMenu();
         });
-        pane.getStylesheets().add("file:/"+System.getProperty("user.dir").replace("\\", "/")+"/styles/game.css");
+        pane.getStylesheets().add(getClass().getResource("/styles/game.css").toString());
         pane.setId("gamepane");
         stage.setScene(scene);
         stage.setResizable(true);

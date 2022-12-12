@@ -1,5 +1,5 @@
 #gamepane{
-    -fx-background-image: url("../src/resources/grass2.png");
-    -fx-background-repeat: repeat-x repeat-y;
+    -fx-background-image: url("../Resources/grass2.png");
+    -fx-background-repeat: repeat;
     -fx-background-size: 200 200;
 }
