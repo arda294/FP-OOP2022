@@ -9,19 +9,16 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-
 import java.util.ArrayList;
 
-public class View {
-    private static final int HEIGHT = 600;
-    private static final int WIDTH = 800;
+public class MainView implements View {
     private Stage stage;
     private Scene scene;
     private AnchorPane pane;
     private ArrayList<Button> buttons = new ArrayList<>();
     private PlayMenu playMenu;
     private Game game;
-    public View() {
+    public MainView() {
         initializeView();
         createButtons();
         System.out.println("Viewer created");
@@ -56,13 +53,7 @@ public class View {
         startButton.setLayoutY(150+5);
 
         startButton.setOnAction((ActionEvent event) -> {
-            if(playMenu.isHidden) {
-                playMenu.toggleMenu();
-                startButton.setText("Back");
-            } else {
-                playMenu.toggleMenu();
-                startButton.setText("Play");
-            }
+            togglePlayMenu(startButton);
         });
         pane.getChildren().add(startButton);
         buttons.add(startButton);
@@ -78,6 +69,16 @@ public class View {
         pane.getChildren().add(banner);
     }
 
+    private void togglePlayMenu(Button startButton) {
+        if(playMenu.isHidden) {
+            playMenu.toggleMenu();
+            startButton.setText("Back");
+        } else {
+            playMenu.toggleMenu();
+            startButton.setText("Play");
+        }
+    }
+
     public void viewGame() {
         stage.setScene(game.getScene());
     }
@@ -89,11 +90,12 @@ public class View {
     public Game getGame() {
         return game;
     }
-
+    @Override
     public Stage getStage() {
         return stage;
     }
 
+    @Override
     public Scene getScene() {
         return scene;
     }

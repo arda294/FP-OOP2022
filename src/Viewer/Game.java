@@ -16,7 +16,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
@@ -26,11 +25,8 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 
 
-public class Game {
-    private static final int HEIGHT = 600;
-    private static final int WIDTH = 800;
+public class Game implements View {
     private static final int physicsFPS = 1000;
-
     private static final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
     private static final GraphicsDevice[] gs = ge.getScreenDevices();
     private static final int refreshRate = gs[0].getDisplayMode().getRefreshRate();
@@ -47,11 +43,12 @@ public class Game {
     private Label bestTime;
     private Label putLabel;
     private Label bestPut;
-    private View viewer;
+    private Label winLabel;
+    private MainView viewer;
     private Timer timer = new Timer();
     private boolean isPlaying = false;
 
-    public Game(View viewer) {
+    public Game(MainView viewer) {
         this.viewer = viewer;
         initializeGame();
 //        createNewGame("1.lvl");
@@ -76,15 +73,6 @@ public class Game {
         pane.setId("gamepane");
         stage.setScene(scene);
         stage.setResizable(true);
-
-    }
-
-    public Stage getStage() {
-        return stage;
-    }
-
-    public Scene getScene() {
-        return scene;
     }
 
     public void createNewGame(String lvl) {
@@ -97,6 +85,7 @@ public class Game {
         }
         createTimerLabel();
         createPutCounter();
+        createWinLabel();
         goal = new Goal(ld.endX(), ld.endY());
         pane.getChildren().add(goal);
         ball = new Ball(physicsFPS, ld.startX(), ld.startY());
@@ -116,9 +105,8 @@ public class Game {
 
         UserDataUtil udt = new UserDataUtil(lvl);
 
-        bestTime.setText("Best : " + udt.getBestTime()/60 + ":" + udt.getBestTime()%60);
+        bestTime.setText("Best : " + udt.getBestTime()/100.0);
         bestPut.setText("Best : " + udt.getBestPuts());
-
 
         // Animation updater at refresh rate
         gameTimer = new AnimationTimer() {
@@ -129,17 +117,18 @@ public class Game {
                 powerMeter.setLength(ball.getPower());
                 timerLabel.setText("Time : " + timer.toString());
                 putLabel.setText("Puts : " + ball.getPuts());
-                if(ball.isInGoal(goal)) {
-                    timer.stop();
-                    try {
-                        udt.update(timer.getSeconds(), ball.getPuts());
-                    } catch(IOException e) {
-                        e.printStackTrace();
-                    }
-                    isPlaying = false;
-                    Game.this.stop();
-                    stop(); // Stop animation timer
+
+                if(!ball.isInGoal(goal)) return;
+                timer.stop();
+                winLabel.setVisible(true);
+                try {
+                    udt.update(timer.getTime(), ball.getPuts());
+                } catch(IOException e) {
+                    e.printStackTrace();
                 }
+                isPlaying = false;
+                Game.this.stop();
+                stop(); // Stop animation timer
             }
         };
         gameTimer.start();
@@ -154,7 +143,6 @@ public class Game {
         pane.getChildren().add(bestTime);
         bestTime.setFont(Font.font("Verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
         bestTime.setLayoutY(20);
-
     }
 
     private void createPutCounter() {
@@ -168,11 +156,32 @@ public class Game {
         bestPut.setLayoutY(60);
     }
 
+    private void createWinLabel() {
+        winLabel = new Label();
+        pane.getChildren().add(winLabel);
+        winLabel.setFont(Font.font("Verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
+        winLabel.setPrefWidth(200);
+        winLabel.setText("You Win!");
+        winLabel.setLayoutY((HEIGHT-100)/2.0);
+        winLabel.setLayoutX((WIDTH-100)/2.0);
+        winLabel.setVisible(false);
+    }
+
     public void stop() {
         System.out.println("Stopping game");
         if(service != null) service.shutdown(); // Stop updater
     }
     public void clearMap() {
         pane.getChildren().clear(); // Clear map
+    }
+
+    @Override
+    public Stage getStage() {
+        return stage;
+    }
+
+    @Override
+    public Scene getScene() {
+        return scene;
     }
 }

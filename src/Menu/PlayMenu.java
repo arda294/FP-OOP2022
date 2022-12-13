@@ -1,7 +1,7 @@
 package Menu;
 
 import Util.LevelGetter;
-import Viewer.View;
+import Viewer.MainView;
 import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.scene.SubScene;
@@ -19,8 +19,8 @@ public class PlayMenu extends SubScene {
     private ArrayList<Button> buttons = new ArrayList<>();
     private LevelList levelList;
     private String selectedLvl;
-    private View viewer;
-    public PlayMenu(View viewer) {
+    private MainView viewer;
+    public PlayMenu(MainView viewer) {
         super(new AnchorPane(), 500,400);
         this.viewer = viewer;
         pane2 = (AnchorPane) this.getRoot();

@@ -20,6 +20,11 @@ public class LevelList extends SubScene {
 
     public LevelList(ArrayList<String> levels) {
         super(new ScrollPane(), 500-padding, 400-padding);
+        initializeLevelList();
+        addButtons(levels);
+    }
+
+    private void initializeLevelList() {
         pane = (ScrollPane)this.getRoot();
         pane.setContent(tilepane);
         pane.setLayoutX(padding);
@@ -28,6 +33,9 @@ public class LevelList extends SubScene {
         tilepane.setPrefColumns(4);
         tilepane.setHgap(20);
         tilepane.setVgap(20);
+    }
+
+    private void addButtons(ArrayList<String> levels) {
         for(String lvl : levels) {
             buttons.add(new LevelIcon(lvl));
         }

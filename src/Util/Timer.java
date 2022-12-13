@@ -7,10 +7,10 @@ import javafx.util.Duration;
 public class Timer {
     private Timeline tl;
     private KeyFrame kf;
-    private int seconds = 0;
+    private int time = 0;
     public Timer() {
-        kf = new KeyFrame(Duration.seconds(1), event -> {
-           seconds++;
+        kf = new KeyFrame(Duration.millis(10), event -> {
+           time++;
         });
         tl = new Timeline(kf);
         tl.setCycleCount(Timeline.INDEFINITE);
@@ -24,17 +24,18 @@ public class Timer {
         tl.stop();
     }
 
+
     public void reset() {
         tl.stop();
-        seconds = 0;
+        time = 0;
     }
 
     @Override
     public String toString() {
-        return seconds/60 + ":" + seconds%60;
+        return Double.toString(time/100.0);
     }
 
-    public int getSeconds() {
-        return seconds;
+    public int getTime() {
+        return time;
     }
 }

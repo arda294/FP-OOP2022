@@ -12,3 +12,21 @@ Untuk Final Project kelas PBO ini, kiranya saya akan membuat sebuah game sederha
 dimana Player akan berusaha memasukkan bola kedalam lubang. Game ini memiliki sekumpulan level dengan kompleksitas yang meningkat. Setiap level akan 
 diberi batas Put (Satu tembakkan) dan juga timer untuk mengukur kemampuan player. Game ini akan menggunakan graphical interface JavaFX. Final Project ini akan 
 mengimplementasikan semua materi perkuliahan yang telah diajarkan.
+
+![img.png](img.png)
+## Aspek-Aspek OOP yang digunakan
+- Casting/Conversion
+- Constructor
+- Overloading
+- Overriding
+- Encapsulation
+- Inheritance
+- Polymorphism
+- ArrayList
+- Exception Handling
+- GUI
+- Interface
+- Abstract Class
+- Generics
+- Collection
+- Input Output

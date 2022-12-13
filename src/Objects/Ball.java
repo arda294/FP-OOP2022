@@ -1,7 +1,6 @@
 package Objects;
 
-import javafx.scene.Scene;
-import javafx.scene.SubScene;
+import Util.Vec2d;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -9,18 +8,14 @@ import java.util.ArrayList;
 
 public class Ball extends Circle {
     private static final int RADIUS = 10;
-    private double posX;
-    private double posY;
-    public double dx = 0;
-    public double dy = 0;
-
-    public double drag = 0.001;
+    private Vec2d pos = new Vec2d();
+    private Vec2d ds = new Vec2d();
+    private Vec2d pv = new Vec2d();
+    private double drag = 0.001;
     private double speedLimit = 2;
     private double power = 0;
-    private double pullDistance = 100;
-    private double px;
-    private double py;
-    public boolean isMoving = false;
+    private final double pullDistance = 100;
+    private boolean isMoving = false;
     private int puts = 0;
 
 
@@ -29,56 +24,46 @@ public class Ball extends Circle {
         setFill(Color.WHITE);
         setStroke(Color.BLACK);
         setStrokeWidth(4);
-        posX = 400;
-        posY = 300;
         speedLimit *= (1000/physicsFPS);
         drag *= (1000/physicsFPS);
-        System.out.println(speedLimit);
 
         setOnMouseDragged((MouseEvent event) -> {
-            if(!isMoving) {
-                px = -event.getX();
-                py = -event.getY();
-                limitPull();
-            }
+            if(!isMoving) pull(event);
         });
 
         setOnMouseReleased((MouseEvent event) -> {
-            if(!isMoving) {
-                dx = px*speedLimit;
-                dy = py*speedLimit;
-                System.out.println(dx + " " +dy);
-                System.out.println("Shot with power : " + power);
-                px = 0;
-                py = 0;
-                power = 0;
-                isMoving = true;
-                puts++;
-            }
+            if(!isMoving) shoot();
         });
     }
 
     public Ball(double physicsFPS, double startX, double startY) {
         this(physicsFPS);
-        this.posX = startX;
-        this.posY = startY;
+        pos.setX(startX);
+        pos.setY(startY);
     }
 
-
-
-    private void limitPull() {
-        double pull = Math.sqrt(px*px + py*py);
-        if(pull > pullDistance) {
-            power = 1;
-            px = (px/pull);
-            py = (py/pull);
-            return;
-        }
-        power = pull/pullDistance;
-        px = (px/pull)*(power);
-        py = (py/pull)*(power);
-
+    private void pull(MouseEvent event) {
+        pv.setX(-event.getX());
+        pv.setY(-event.getY());
+        power = pv.length()/pullDistance;
+        power = Math.min(power,1);
+        pv = pv.normalized();
+        pv.setX(pv.getX()*power);
+        pv.setY(pv.getY()*power);
     }
+
+    private void shoot() {
+        ds.setX(pv.getX()*speedLimit);
+        ds.setY(pv.getY()*speedLimit);
+        System.out.println(ds.getX() + " " +ds.getY());
+        System.out.println("Shot with power : " + power);
+        pv.setX(0);
+        pv.setY(0);
+        power = 0;
+        isMoving = true;
+        puts++;
+    }
+
 
     private double clamp(double value, double ll, double ul) {
         if(value > ul) value = ul;
@@ -86,118 +71,90 @@ public class Ball extends Circle {
         return value;
     }
 
-    public void moveBall(ArrayList<Wall> walls) {
-        double speed = Math.sqrt(dx*dx + dy*dy);
-        if(speed > 0) {
-            dx -= (dx/speed) * drag;
-            dy -= (dy/speed) * drag;
-            if(speed < 0.1) {
-                dx = 0;
-                dy = 0;
-                isMoving = false;
-            }
-        }
-        if(posX+RADIUS >= getScene().getWidth() || posX-RADIUS <= 0) dx *= -1;
-        if(posY+RADIUS >= getScene().getHeight() || posY-RADIUS <= 0)  dy *= -1;
-        checkCollision(walls);
-        posX += dx;
-        posY += dy;
-    }
-
-    private static double rotateX(double x, double y, double angle) {
-        return x*Math.cos(Math.toRadians(angle)) - y*Math.sin(Math.toRadians(angle));
-    }
-
-    private static double rotateY(double x, double y, double angle) {
-        return x*Math.sin(Math.toRadians(angle)) + y*Math.cos(Math.toRadians(angle));
-    }
-    private void anticlip(double x1, double y1, double distance, double ni, double nj, Wall wall) {
+    // Anti ball clip
+    private void anticlip(Vec2d p, Vec2d n, double distance, Wall wall) {
         if(distance < RADIUS) {
-            if(wall.getRotate() != 0) {
-                double tempX = x1;
-                x1 = rotateX(x1-wall.getCenterX(), y1-wall.getCenterY(), wall.getRotate()) + wall.getCenterX();
-                y1 = rotateY(tempX-wall.getCenterX(), y1-wall.getCenterY(), wall.getRotate()) + wall.getCenterY();
-            }
-            posX = x1 + (ni*(RADIUS-distance));
-            posY = y1 + (nj*(RADIUS-distance));
-//            System.out.println((distance - RADIUS) + " abnormal collision");
+            if(wall.getRotate() != 0) p.rotate(new Vec2d(wall.getCenterX(), wall.getCenterY()), wall.getRotate());
+            pos.setX(p.getX() + (n.getX()*(RADIUS-distance)));
+            pos.setY(p.getY() + (n.getY()*(RADIUS-distance)));
         }
+    }
+
+    // Check wall collisions
+    private void checkWall(Wall wall, Vec2d p1, Vec2d v, double distance) {
+        System.out.println("Collision");
+        Vec2d n = new Vec2d();
+        n.copy(v);
+        n = n.normalized();
+        if(distance == 0) n.copy(new Vec2d(0,0));
+        if(wall.getRotate() != 0) ds.rotate(-wall.getRotate());
+        if(p1.getX() > wall.getLayoutX() + wall.getWidth() && p1.getY() > wall.getLayoutY() + wall.getHeight() ||
+                p1.getX() < wall.getLayoutX() && p1.getY() > wall.getLayoutY() + wall.getHeight() ||
+                p1.getX() > wall.getLayoutX() + wall.getWidth() && p1.getY() < wall.getLayoutY() ||
+                p1.getX() < wall.getLayoutX() && p1.getY() < wall.getLayoutY()) {
+            anticlip(p1, n, distance, wall);
+            double dotp = Vec2d.dot(ds,n);
+            ds.setX(ds.getX() - (2 * dotp * n.getX()));
+            ds.setY(ds.getY() - (2 * dotp * n.getY()));
+        } else if (p1.getX() > wall.getLayoutX() && p1.getX() < wall.getLayoutX() + wall.getWidth()) {
+            anticlip(p1, n, distance, wall);
+            ds.setY(ds.getY()*-1);
+        } else if (p1.getY() > wall.getLayoutY() && p1.getY() < wall.getLayoutY() + wall.getHeight()){
+            anticlip(p1, n, distance, wall);
+            ds.setX(ds.getX()*-1);
+        } else {
+            ds.setXY(0,0);
+        }
+        if(wall.getRotate() != 0) ds.rotate(wall.getRotate());
     }
 
     private void checkCollision(ArrayList<Wall> walls) {
         double distance;
-        double x1, x2, y1, y2;
-        double i, j;
-
+        Vec2d p1 = new Vec2d();
+        Vec2d p2 = new Vec2d();
+        Vec2d v = new Vec2d();
         for(Wall wall : walls) {
-            x1 = posX;
-            y1 = posY;
-            if (wall.getRotate() != 0) {
-                double tempX = x1;
-                x1 = rotateX(x1-wall.getCenterX(), y1-wall.getCenterY(), -wall.getRotate()) + wall.getCenterX();
-                y1 = rotateY(tempX-wall.getCenterX(), y1-wall.getCenterY(), -wall.getRotate()) + wall.getCenterY();
-                x2 = clamp(x1, wall.getCenterX() - wall.getWidth()/2, wall.getCenterX() + wall.getWidth()/2);
-                y2 = clamp(y1, wall.getCenterY() - wall.getHeight()/2, wall.getCenterY() + wall.getHeight()/2);
-            } else {
-                x2 = clamp(x1, wall.getCenterX() - wall.getWidth()/2, wall.getCenterX() + wall.getWidth()/2);
-                y2 = clamp(y1, wall.getCenterY() - wall.getHeight()/2, wall.getCenterY() + wall.getHeight()/2);
-            }
-            i = x1-x2;
-            j = y1-y2;
-            distance = Math.sqrt(i*i + j*j);
-            if(distance < RADIUS) {
-                System.out.println("Collision");
-                double ni = i / distance;
-                double nj = j / distance;
-                if(distance == 0) {
-                    ni = 0;
-                    nj = 0;
-                }
-
-                if(wall.getRotate() != 0) {
-                    double tempX = dx;
-                    dx = rotateX(dx, dy, -wall.getRotate());
-                    dy = rotateY(tempX, dy, -wall.getRotate());
-                }
-
-                if(x1 > wall.getLayoutX() + wall.getWidth() && y1 > wall.getLayoutY() + wall.getHeight() ||
-                        x1 < wall.getLayoutX() && y1 > wall.getLayoutY() + wall.getHeight() ||
-                        x1 > wall.getLayoutX() + wall.getWidth() && y1 < wall.getLayoutY() ||
-                        x1 < wall.getLayoutX() && y1 < wall.getLayoutY()) {
-                    anticlip(x1, y1, distance, ni, nj, wall);
-                    double dotp = (dx * ni) + (dy * nj);
-                    dx -= (2 * dotp * ni);
-                    dy -= (2 * dotp * nj);
-                } else if (x1 > wall.getLayoutX() && x1 < wall.getLayoutX() + wall.getWidth()) {
-                    dy *= -1;
-                    anticlip(x1, y1, distance, ni, nj, wall);
-                } else if (y1 > wall.getLayoutY() && y1 < wall.getLayoutY() + wall.getHeight()){
-                    dx *= -1;
-                    anticlip(x1, y1, distance, ni, nj, wall);
-                } else {
-                    dx = 0;
-                    dy = 0;
-                }
-                if(wall.getRotate() != 0) {
-                    double tempX = dx;
-                    dx = rotateX(dx, dy, wall.getRotate());
-                    dy = rotateY(tempX, dy, wall.getRotate());
-                }
-                break;
-            }
+            p1.copy(pos);
+            if (wall.getRotate() != 0) p1.rotate(new Vec2d(wall.getCenterX(), wall.getCenterY()), -wall.getRotate());
+            p2.setX(clamp(p1.getX(), wall.getCenterX() - wall.getWidth()/2, wall.getCenterX() + wall.getWidth()/2));
+            p2.setY(clamp(p1.getY(), wall.getCenterY() - wall.getHeight()/2, wall.getCenterY() + wall.getHeight()/2));
+            v.copy(p1);
+            v.substract(p2);
+            distance = v.length();
+            if(distance > RADIUS) continue;
+            checkWall(wall, p1, v, distance);
+            break;
         }
     }
 
+    // Move ball coords
+    public void moveBall(ArrayList<Wall> walls) {
+        double speed = ds.length();
+        if(speed > 0) {
+            ds.setX(ds.getX() - ((ds.getX()/speed) * drag));
+            ds.setY(ds.getY() - ((ds.getY()/speed) * drag));
+            if(speed < 0.1) {
+                ds.setX(0);
+                ds.setY(0);
+                isMoving = false;
+            }
+        }
+        if(pos.getX()+RADIUS >= getScene().getWidth() || pos.getX()-RADIUS <= 0) ds.setX(ds.getX()*-1);
+        if(pos.getY()+RADIUS >= getScene().getHeight() || pos.getY()-RADIUS <= 0)  ds.setY(ds.getY()*-1);
+        checkCollision(walls);
+        pos.setX(pos.getX() + ds.getX());
+        pos.setY(pos.getY() + ds.getY());
+    }
+
+    // Update ball pos
     public void update() {
-        setLayoutX(posX);
-        setLayoutY(posY);
+        setLayoutX(pos.getX());
+        setLayoutY(pos.getY());
     }
 
     public boolean isInGoal(Goal goal) {
-        double x = posX - goal.getLayoutX();
-        double y = posY - goal.getLayoutY();
-        double distance = Math.sqrt(x*x + y*y);
-        if(distance < goal.getRadius()) {
+        Vec2d v = new Vec2d(pos.getX() - goal.getLayoutX(), pos.getY() - goal.getLayoutY());
+        if(v.length() < goal.getRadius()) {
             System.out.println("Goal!");
             setVisible(false);
             return true;
