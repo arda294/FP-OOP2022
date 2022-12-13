@@ -49,3 +49,7 @@ https://github.com/arda294/FP-OOP2022/blob/921102bd274a6543eeb96b04e7a16f85a148f
 https://github.com/arda294/FP-OOP2022/blob/921102bd274a6543eeb96b04e7a16f85a148f382/src/Util/UserDataUtil.java#L22-L40
 
 Video Demo : https://youtu.be/y6lnswg7fhI
+## Referensi
+- Building Collision Simulations: An Introduction to Computer Graphics : https://www.youtube.com/watch?v=eED4bSkYCB8
+- Collision Detection Guide | Circle - Rectangle : https://www.youtube.com/watch?v=r0wAEi86vTA
+- Styling FX Buttons with CSS : http://fxexperience.com/2011/12/styling-fx-buttons-with-css/
